@@ -22,7 +22,7 @@ var outPath = args.DefaultIfEmpty(Directory.GetCurrentDirectory()).First();
 
 foreach (var league in leagues)
 {
-    var leaguePath = Path.Combine(outPath, league.Id);
+        var leaguePath = Path.Combine(outPath, league.Id);
     Directory.CreateDirectory(leaguePath);
 
     var calendar = new Ical.Net.Calendar();
@@ -101,6 +101,12 @@ static async IAsyncEnumerable<(Team Team, Game Game)> GetGamesAsync(League leagu
         if (startYear == 0)
         {
             var values = firstCol.Split('-', StringSplitOptions.TrimEntries);
+
+            if (values.Length != 2)
+            {
+                continue;
+            }
+
             startYear = int.Parse(values[0]);
             endYear = int.Parse(values[1]);
             continue;

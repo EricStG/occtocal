@@ -1,8 +1,7 @@
 {
   "profiles": {
     "OccToICal": {
-      "commandName": "Project",
-      "commandLineArgs": "c:\\test"
+      "commandName": "Project"
     }
   }
 }
