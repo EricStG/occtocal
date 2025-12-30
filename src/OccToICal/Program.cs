@@ -26,7 +26,6 @@ foreach (var league in leagues)
     Directory.CreateDirectory(leaguePath);
 
     var calendar = new Ical.Net.Calendar();
-    calendar.AddLocalTimeZone(DateTime.Now.AddYears(-1), false);
 
     var games = GetGamesAsync(league, httpClient);
 
@@ -148,7 +147,7 @@ static async IAsyncEnumerable<(Team Team, Game Game)> GetGamesAsync(League leagu
 
         var time = TimeOnly.Parse(secondCol);
 
-        var startTime = new DateTime(year, month, day, time.Hour, time.Minute, 0);
+        var startTime = new DateTime(year, month, day, time.Hour, time.Minute, 0).ToUniversalTime();
 
         foreach (var sheet in sheetMap)
         {
