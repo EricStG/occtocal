@@ -1,0 +1,36 @@
+name: Generate calendars
+on:
+  workflow_dispatch:
+ 
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - uses: actions/setup-dotnet@v5
+      with:
+        global-json-file: global.json
+    - run: |
+        mkdir out
+        dotnet run -c Release OccToICal/OccToICal.csproj ./out
+    - name: Upload calendars as artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: out/
+
+  deploy:
+    needs: build
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
