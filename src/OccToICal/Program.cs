@@ -20,6 +20,8 @@ var serializer = new CalendarSerializer();
 
 var outPath = args.DefaultIfEmpty(Directory.GetCurrentDirectory()).First();
 
+var localTimeZone = TimeZoneInfo.FindSystemTimeZoneById("America/Toronto");
+
 foreach (var league in leagues)
 {
         var leaguePath = Path.Combine(outPath, league.Id);
@@ -54,7 +56,7 @@ foreach (var league in leagues)
 
 }
 
-static async IAsyncEnumerable<(Team Team, Game Game)> GetGamesAsync(League league, HttpClient httpClient)
+async IAsyncEnumerable<(Team Team, Game Game)> GetGamesAsync(League league, HttpClient httpClient)
 {
     var uriBuilder = new UriBuilder(league.Spreadsheet);
     var query = HttpUtility.ParseQueryString(league.Spreadsheet.Query);
@@ -147,7 +149,8 @@ static async IAsyncEnumerable<(Team Team, Game Game)> GetGamesAsync(League leagu
 
         var time = TimeOnly.Parse(secondCol);
 
-        var startTime = new DateTime(year, month, day, time.Hour, time.Minute, 0).ToUniversalTime();
+        var startTime = new DateTime(year, month, day, time.Hour, time.Minute, 0);
+        startTime = TimeZoneInfo.ConvertTimeToUtc(startTime, localTimeZone);
 
         foreach (var sheet in sheetMap)
         {
