@@ -29,11 +29,13 @@ foreach (var league in leagues)
 
     var calendar = new Ical.Net.Calendar();
 
-    var games = GetGamesAsync(league, httpClient);
-
+    var games = await GetGamesAsync(league, httpClient).ToArrayAsync();
+    var timestamp = new CalDateTime(games.Min(x => x.Game.StartTime));
+  
     var gamesPerTeam = games.GroupBy(x => x.Team, x => x.Game);
 
-    await foreach (var team in gamesPerTeam)
+
+    foreach (var team in gamesPerTeam)
     {
         var events = team.Select(g => new CalendarEvent
         {
@@ -43,7 +45,8 @@ foreach (var league in leagues)
             Start = new CalDateTime(g.StartTime),
             Location = "Ottawa Curling Club",
             GeographicLocation = new GeographicLocation(45.410914781505205, -75.68995690238111),
-            Transparency = g.IsBye ? "TRANSPARENT" : "OPAQUE"
+            Transparency = g.IsBye ? "TRANSPARENT" : "OPAQUE",
+            DtStamp = timestamp
         }).ToArray();
 
         calendar.Events.AddRange(events);
